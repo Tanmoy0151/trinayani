@@ -24,25 +24,17 @@ export default function AdminDashboard() {
     const userData = localStorage.getItem('user');
     
     if (!userData) {
-      router.push('/login');
       return;
     }
     
     try {
       const parsedUser = JSON.parse(userData);
-      
-      if (parsedUser.role !== 'admin') {
-        router.push('/dashboard');
-        return;
-      }
-      
       setUser(parsedUser);
       fetchData();
     } catch (error) {
       console.error('Error parsing user data:', error);
-      router.push('/login');
     }
-  }, [router]);
+  }, []);
   
   const fetchData = async () => {
     setIsLoading(true);
@@ -65,11 +57,6 @@ export default function AdminDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
-  
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    router.push('/login');
   };
   
   const updateApplicationStatus = async (id: string, status: Application['status']) => {
@@ -151,34 +138,18 @@ export default function AdminDashboard() {
   
   if (isLoading) {
     return (
-      <div className="container mx-auto py-16 px-4">
-        <div className="flex justify-center">
-          <div className="animate-spin h-8 w-8 border-4 border-primary-500 rounded-full border-t-transparent"></div>
-        </div>
+      <div className="flex justify-center p-8">
+        <div className="animate-spin h-8 w-8 border-4 border-primary-500 rounded-full border-t-transparent"></div>
       </div>
     );
   }
   
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="flex justify-between items-center mb-8">
-        <PageHeader 
-          title={`Admin Dashboard`}
-          description="Manage job applications and job postings"
-        />
-        
-        <div className="flex items-center space-x-4">
-          <span className="text-sm text-gray-500">
-            Logged in as <span className="font-medium">{user?.name}</span>
-          </span>
-          <Button 
-            onClick={handleLogout}
-            variant="outline"
-          >
-            Sign Out
-          </Button>
-        </div>
-      </div>
+    <div className="p-6">
+      <PageHeader 
+        title="Admin Dashboard"
+        description="Manage job applications and job postings"
+      />
       
       <div className="mb-6">
         <div className="sm:hidden">
@@ -233,7 +204,7 @@ export default function AdminDashboard() {
         </div>
         
         {selectedTab === 'applications' && (
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant={statusFilter === 'all' ? 'default' : 'outline'}
               onClick={() => setStatusFilter('all')}
@@ -491,12 +462,12 @@ export default function AdminDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            job.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                            job.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                           }`}>
                             {job.isActive ? 'Active' : 'Inactive'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex items-center space-x-3">
                             <Link
                               href={`/admin/jobs/${job.id}`}
@@ -506,7 +477,7 @@ export default function AdminDashboard() {
                             </Link>
                             <button
                               onClick={() => toggleJobActiveStatus(job.id)}
-                              className={job.isActive ? "text-red-600 hover:text-red-900" : "text-green-600 hover:text-green-900"}
+                              className="text-primary-600 hover:text-primary-900"
                             >
                               {job.isActive ? 'Deactivate' : 'Activate'}
                             </button>

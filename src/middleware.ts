@@ -69,9 +69,11 @@ export async function middleware(request: NextRequest) {
 // Configure the middleware to run on specific paths
 export const config = {
   matcher: [
-    // Match all protected and admin routes
-    ...protectedRoutes.map(route => `${route}/:path*`),
-    // Add other routes that need middleware here
+    // Match all protected routes
+    '/dashboard/:path*',
+    '/profile/:path*',
+    '/admin/:path*',
+    // API routes
     '/api/:path*',
   ],
 }; 

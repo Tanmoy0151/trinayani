@@ -1,67 +1,77 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ShieldAlert, ArrowLeft } from 'lucide-react';
 
 export default function UnauthorizedPage() {
-  const [countdown, setCountdown] = useState(5);
-
+  const router = useRouter();
+  const [user, setUser] = useState<any>(null);
+  
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
+    // Get user from localStorage
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      try {
+        setUser(JSON.parse(userData));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
   }, []);
-
+  
+  const handleBack = () => {
+    router.back();
+  };
+  
+  const getDashboardLink = () => {
+    if (!user) return '/login';
+    
+    switch (user.role) {
+      case 'applicant':
+        return '/applicant/dashboard';
+      case 'field_employee':
+        return '/employee/dashboard';
+      case 'backoffice_admin':
+        return '/admin/dashboard';
+      case 'super_admin':
+        return '/admin/dashboard';
+      default:
+        return '/';
+    }
+  };
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 to-white p-4">
-      <div className="max-w-md w-full p-8 bg-white rounded-xl shadow-lg">
-        <div className="text-center">
-          <div className="rounded-full bg-red-100 p-3 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-8 h-8 text-red-700"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-              />
-            </svg>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 px-4">
+      <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md text-center">
+        <div className="mb-6 flex justify-center">
+          <div className="bg-red-100 p-4 rounded-full">
+            <ShieldAlert className="h-16 w-16 text-red-500" />
           </div>
+        </div>
+        
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">Access Denied</h1>
+        
+        <p className="text-gray-600 mb-6">
+          You don't have permission to access this page. 
+          {user && (
+            <span> Your current role ({user.role.replace('_', ' ')}) doesn't have the required permissions.</span>
+          )}
+        </p>
+        
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button variant="outline" onClick={handleBack} className="w-full sm:w-auto">
+            <ArrowLeft size={16} className="mr-2" />
+            Go Back
+          </Button>
           
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h1>
-          <p className="text-gray-600 mb-6">
-            You don't have permission to access this page. Please contact your administrator if you believe this is an error.
-          </p>
-          
-          <div className="space-y-4">
-            <Link 
-              href="/"
-              className="block w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition duration-200"
-            >
-              Return to Homepage
-            </Link>
-            
-            {countdown > 0 ? (
-              <p className="text-sm text-gray-500">
-                Redirecting to homepage in {countdown} second{countdown !== 1 ? 's' : ''}...
-              </p>
-            ) : (
-              <meta httpEquiv="refresh" content="0;url=/" />
-            )}
-          </div>
+          <Link href={getDashboardLink()}>
+            <Button className="w-full sm:w-auto">
+              Go to Dashboard
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

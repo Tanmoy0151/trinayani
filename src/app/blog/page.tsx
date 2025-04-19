@@ -201,16 +201,14 @@ export default function BlogPage() {
         </div>
       </section>
       
-      {/* Newsletter Signup */}
-      <div className="my-10">
-        <NewsletterSignup 
-          title="Subscribe to our newsletter" 
-          description="Get the latest articles, industry insights and company updates delivered to your inbox."
-          bgColor="gray"
-          layout="horizontal"
-          variant="default"
-        />
-      </div>
+      {/* Newsletter Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-xl mx-auto">
+            <NewsletterSignup variant="default" source="blog_page" />
+          </div>
+        </div>
+      </section>
     </div>
   );
 } 

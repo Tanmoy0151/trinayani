@@ -203,11 +203,8 @@ export default function Home() {
       <section className="py-16 bg-white">
         <div className="container-custom">
           <NewsletterSignup
-            title="Stay Updated with Medical Innovations"
-            description="Subscribe to receive the latest news on medical equipment, technology advancements, and special promotions."
-            bgColor="white"
-            layout="horizontal"
             variant="default"
+            source="homepage"
           />
         </div>
       </section>

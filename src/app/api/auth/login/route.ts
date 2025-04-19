@@ -11,6 +11,7 @@ interface User {
   email: string;
   password: string;
   createdAt: Date;
+  isLoginRestricted: boolean;
 }
 
 const mockUsers: User[] = [];
@@ -35,6 +36,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { message: 'Invalid email or password' },
         { status: 401 }
+      );
+    }
+
+    // Check if user's login is restricted by a super_admin
+    if (user.isLoginRestricted) {
+      return NextResponse.json(
+        { message: 'Your account has been restricted. Please contact an administrator.' },
+        { status: 403 }
       );
     }
 
