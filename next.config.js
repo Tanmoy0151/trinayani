@@ -2,9 +2,16 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['placehold.co'],   // Allow placehold.co images
-    dangerouslyAllowSVG: true, // Allow SVG images
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;", // Allow SVG images
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+    dangerouslyAllowSVG: true, // This tells Next.js to accept SVG images even though they can potentially contain scripts
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;", //This CSP prevents any scripts from running in the SVG and applies sandbox restrictions
   },
   // Configure allowed development origins
   allowedDevOrigins: [
