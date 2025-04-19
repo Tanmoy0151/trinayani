@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import PageHeader from '@/components/PageHeader';
 import BlogCard from '@/components/BlogCard';
 import blogPosts, { BLOG_CATEGORIES } from '@/data/blog-posts';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 export default function BlogPage() {
   const searchParams = useSearchParams();
@@ -201,39 +202,15 @@ export default function BlogPage() {
       </section>
       
       {/* Newsletter Signup */}
-      <section className="rounded-xl bg-gray-50 p-8 sm:p-10">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Subscribe to our newsletter
-          </h2>
-          <p className="mt-2 text-gray-600">
-            Get the latest articles, industry insights and company updates delivered to your inbox.
-          </p>
-          <form className="mt-6 flex flex-col sm:flex-row gap-2">
-            <div className="flex-1">
-              <label htmlFor="email-address" className="sr-only">Email address</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="Enter your email"
-                className="w-full rounded-md border-gray-300 px-4 py-2.5 focus:border-primary-500 focus:ring-primary-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="flex-none rounded-md bg-primary-600 px-6 py-2.5 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-            >
-              Subscribe
-            </button>
-          </form>
-          <p className="mt-3 text-xs text-gray-500">
-            By subscribing, you agree to our Privacy Policy and consent to receive updates.
-          </p>
-        </div>
-      </section>
+      <div className="my-10">
+        <NewsletterSignup 
+          title="Subscribe to our newsletter" 
+          description="Get the latest articles, industry insights and company updates delivered to your inbox."
+          bgColor="gray"
+          layout="horizontal"
+          variant="default"
+        />
+      </div>
     </div>
   );
 } 

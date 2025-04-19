@@ -1,79 +1,67 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Metadata } from 'next';
 import Image from 'next/image';
-import { notFound, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import BlogCard from '@/components/BlogCard';
-import blogPosts, { BLOG_CATEGORIES } from '@/data/blog-posts';
+import blogPosts, { BLOG_CATEGORIES, BlogPost } from '@/data/blog-posts';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const [post, setPost] = useState<typeof blogPosts[0] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [relatedPosts, setRelatedPosts] = useState<typeof blogPosts>([]);
-  const router = useRouter();
+// Add generateMetadata function for SEO
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: { slug: string } 
+}): Promise<Metadata> {
+  const post = blogPosts.find(post => post.slug === params.slug);
   
-  // Fetch post data with async/await
-  useEffect(() => {
-    async function fetchPost() {
-      setLoading(true);
-      try {
-        // Simulate an async operation
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        const foundPost = blogPosts.find(post => post.slug === params.slug);
-        
-        if (!foundPost) {
-          notFound();
-          return;
-        }
-        
-        setPost(foundPost);
-        
-        // Get related posts
-        const related = blogPosts
-          .filter(p => 
-            p.id !== foundPost.id && (
-              p.category === foundPost.category ||
-              p.tags.some(tag => foundPost.tags.includes(tag))
-            )
-          )
-          .sort(() => 0.5 - Math.random()) // Shuffle
-          .slice(0, 3); // Get 3 random related posts
-          
-        setRelatedPosts(related);
-      } catch (error) {
-        console.error("Error fetching post:", error);
-        notFound();
-      } finally {
-        setLoading(false);
-      }
-    }
-    
-    fetchPost();
-  }, [params.slug]);
-  
-  // Show loading state while fetching post
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 w-1/2 mx-auto bg-gray-200 rounded"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
-          <div className="h-4 bg-gray-200 rounded"></div>
-          <div className="h-4 bg-gray-200 rounded"></div>
-          <div className="h-4 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-    );
-  }
-  
-  // If post isn't loaded and we're not loading, show 404
   if (!post) {
-    return notFound();
+    return {
+      title: 'Post Not Found',
+      description: 'The requested blog post could not be found.'
+    };
   }
   
-  // Format date for display (manual implementation since we can't use date-fns)
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: [post.coverImage],
+      type: 'article',
+      publishedTime: post.publishedAt,
+      authors: [post.author.name],
+      tags: post.tags
+    }
+  };
+}
+
+// Convert to server component and use async/await pattern
+export default async function BlogPostPage({ 
+  params 
+}: { 
+  params: { slug: string } 
+}) {
+  // Find the post from our data
+  const post = blogPosts.find(post => post.slug === params.slug);
+  
+  // If post doesn't exist, show 404
+  if (!post) {
+    notFound();
+  }
+  
+  // Get related posts
+  const relatedPosts = blogPosts
+    .filter(p => 
+      p.id !== post.id && (
+        p.category === post.category ||
+        p.tags.some(tag => post.tags.includes(tag))
+      )
+    )
+    .sort(() => 0.5 - Math.random()) // Shuffle
+    .slice(0, 3); // Get 3 random related posts
+  
+  // Format date for display (manual implementation)
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const months = [
@@ -241,57 +229,14 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
       )}
       
       {/* Newsletter Signup */}
-      <div className="my-16 rounded-xl bg-primary-50 p-8 sm:p-10">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Want more articles like this?
-          </h2>
-          <p className="mt-2 text-gray-600">
-            Sign up for our newsletter and get our best content delivered to your inbox.
-          </p>
-          <form className="mt-6 flex flex-col sm:flex-row gap-2">
-            <div className="flex-1">
-              <label htmlFor="email-address" className="sr-only">Email address</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="Enter your email"
-                className="w-full rounded-md border-gray-300 px-4 py-2.5 focus:border-primary-500 focus:ring-primary-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="flex-none rounded-md bg-primary-600 px-6 py-2.5 font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
-      </div>
-      
-      {/* Back to Blog Link */}
-      <div className="mt-10 text-center">
-        <Link 
-          href="/blog" 
-          className="inline-flex items-center font-medium text-primary-600 hover:text-primary-700"
-        >
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="mr-2 h-5 w-5" 
-            viewBox="0 0 20 20" 
-            fill="currentColor"
-          >
-            <path 
-              fillRule="evenodd" 
-              d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" 
-              clipRule="evenodd" 
-            />
-          </svg>
-          Back to Blog
-        </Link>
+      <div className="my-16">
+        <NewsletterSignup 
+          title="Want more articles like this?" 
+          description="Sign up for our newsletter and get our best content delivered to your inbox."
+          bgColor="primary-50"
+          layout="horizontal"
+          variant="default"
+        />
       </div>
     </div>
   );

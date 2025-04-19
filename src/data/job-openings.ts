@@ -145,4 +145,57 @@ const jobOpenings: JobOpening[] = [
   }
 ];
 
+/**
+ * Add a new job posting
+ * @param job The job posting to add (without id)
+ * @returns The added job with an id
+ */
+export function addJobPosting(job: Omit<JobOpening, 'id' | 'postedAt'>): JobOpening {
+  // Generate the next ID
+  const maxId = Math.max(...jobOpenings.map(j => j.id));
+  const newId = maxId + 1;
+  
+  // Create new job with current timestamp
+  const newJob: JobOpening = {
+    ...job,
+    id: newId,
+    postedAt: new Date().toISOString(),
+  };
+  
+  // Add to array
+  jobOpenings.push(newJob);
+  
+  return newJob;
+}
+
+/**
+ * Update an existing job posting
+ * @param id The ID of the job to update
+ * @param jobData The updated job data
+ * @returns The updated job or null if not found
+ */
+export function updateJobPosting(id: number, jobData: Partial<Omit<JobOpening, 'id'>>): JobOpening | null {
+  const index = jobOpenings.findIndex(job => job.id === id);
+  
+  if (index === -1) {
+    return null;
+  }
+  
+  jobOpenings[index] = {
+    ...jobOpenings[index],
+    ...jobData,
+  };
+  
+  return jobOpenings[index];
+}
+
+/**
+ * Get a job by ID
+ * @param id The ID of the job to find
+ * @returns The job or undefined if not found
+ */
+export function getJobById(id: number): JobOpening | undefined {
+  return jobOpenings.find(job => job.id === id);
+}
+
 export default jobOpenings; 

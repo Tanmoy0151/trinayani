@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import BlogCard from '@/components/BlogCard';
 import blogPosts from '@/data/blog-posts';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 export default function Home() {
   // Get featured or recent blog posts
@@ -195,6 +196,19 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-16 bg-white">
+        <div className="container-custom">
+          <NewsletterSignup
+            title="Stay Updated with Medical Innovations"
+            description="Subscribe to receive the latest news on medical equipment, technology advancements, and special promotions."
+            bgColor="white"
+            layout="horizontal"
+            variant="default"
+          />
         </div>
       </section>
 

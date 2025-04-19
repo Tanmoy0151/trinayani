@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import NewsletterSignup from '@/components/NewsletterSignup';
 
 export default function Products() {
   return (
@@ -312,6 +314,19 @@ export default function Products() {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Newsletter Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container-custom">
+          <NewsletterSignup 
+            title="Get Product Updates and Special Offers"
+            description="Subscribe to receive information about new medical equipment, technology updates, and exclusive promotions."
+            bgColor="white"
+            layout="horizontal"
+            variant="default"
+          />
         </div>
       </section>
 
