@@ -5,7 +5,8 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const userId = url.searchParams.get('userId');
-    const isAdmin = url.searchParams.get('isAdmin') === 'true';
+    const role = url.searchParams.get('role') || '';
+    const isAdmin = ['super_admin', 'backoffice_admin', 'admin'].includes(role);
 
     // Special case for admin - return all applications
     if (isAdmin) {

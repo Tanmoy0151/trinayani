@@ -41,8 +41,8 @@ export default function CreateBlogPost() {
     
     try {
       const parsedUser = JSON.parse(userData);
-      if (parsedUser.role !== 'admin') {
-        router.push('/dashboard');
+      if (parsedUser.role !== 'super_admin' && parsedUser.role !== 'backoffice_admin' && parsedUser.role !== 'admin') {
+        router.push('/unauthorized');
         return;
       }
       setUser(parsedUser);

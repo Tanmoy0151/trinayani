@@ -15,7 +15,8 @@ async function isAdmin(request: Request) {
   
   try {
     const payload = await verifyToken(authToken);
-    return payload?.role === 'admin';
+    // Check for all admin roles, not just 'admin'
+    return payload?.role === 'admin' || payload?.role === 'super_admin' || payload?.role === 'backoffice_admin';
   } catch (error) {
     return false;
   }

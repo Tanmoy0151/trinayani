@@ -28,7 +28,7 @@ export default function AdminBlogPage() {
   const [user, setUser] = useState<{ role: string } | null>(null);
 
   useEffect(() => {
-    // Check if user is logged in
+    // Check if user is logged in and has appropriate role
     const userData = localStorage.getItem('user');
     
     if (!userData) {
@@ -39,8 +39,9 @@ export default function AdminBlogPage() {
     try {
       const parsedUser = JSON.parse(userData);
       
-      if (parsedUser.role !== 'admin') {
-        router.push('/dashboard');
+      // Only admin roles should access this page
+      if (parsedUser.role !== 'super_admin' && parsedUser.role !== 'backoffice_admin' && parsedUser.role !== 'admin') {
+        router.push('/unauthorized');
         return;
       }
       

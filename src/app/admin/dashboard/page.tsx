@@ -41,7 +41,7 @@ export default function AdminDashboard() {
     
     try {
       // Fetch applications
-      const applicationsResponse = await fetch('/api/applications?isAdmin=true');
+      const applicationsResponse = await fetch(`/api/applications?role=${user?.role || ''}`);
       const applicationsData = await applicationsResponse.json();
       
       if (applicationsData.success) {

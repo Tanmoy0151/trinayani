@@ -4,6 +4,8 @@ import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import logger from '@/utils/logger';
+import { navigateByRole } from '@/utils/navigateToRole';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -17,6 +19,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
+    logger.info('LoginPage', 'Attempting to authenticate user', { email });
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -30,16 +33,26 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        logger.error('LoginPage', `Authentication failed with status ${response.status}`, {
+          message: data.message
+        });
         throw new Error(data.message || 'Login failed');
       }
 
-      // Store user data in localStorage
-      localStorage.setItem('user', JSON.stringify(data.user));
+      logger.auth('LoginPage', 'login', String(data.user?.id), data.user?.role);
       
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Store user data in localStorage
+      try {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        logger.info('LoginPage', 'User data stored in localStorage');
+      } catch (storageError) {
+        logger.error('LoginPage', 'Failed to store user data in localStorage', storageError);
+      }
+      
+      // Redirect to dashboard using our utility
+      navigateByRole(router, data.user?.role, '/login');
     } catch (error) {
-      console.error('Login error:', error);
+      logger.error('LoginPage', 'Error during authentication', error);
       setError(error instanceof Error ? error.message : 'Login failed. Please try again.');
     } finally {
       setLoading(false);

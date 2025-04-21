@@ -63,22 +63,30 @@ export default function UsersManagementPage() {
         return;
       }
       
-      fetchUsers();
+      // Don't fetch users here - will be done in another useEffect
     } catch (error) {
       console.error('Error parsing user data:', error);
       router.push('/login');
     }
   }, [router]);
   
+  // Separate useEffect to fetch users once currentUser is available
+  useEffect(() => {
+    if (currentUser?.id) {
+      fetchUsers();
+    }
+  }, [currentUser]);
+  
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     
     try {
+      console.log('Fetching users with authorization:', currentUser?.id.toString());
       // In a real app, you would include an auth token
       const response = await fetch('/api/admin/users', {
         headers: {
-          'Authorization': currentUser?.id.toString() || ''
+          'Authorization': currentUser?.id.toString()
         }
       });
       
@@ -103,7 +111,7 @@ export default function UsersManagementPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': currentUser?.id.toString() || ''
+          'Authorization': currentUser?.id.toString()
         },
         body: JSON.stringify({
           id: userId,
@@ -138,7 +146,7 @@ export default function UsersManagementPage() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': currentUser?.id.toString() || ''
+          'Authorization': currentUser?.id.toString()
         },
         body: JSON.stringify({
           id: userId,
@@ -168,16 +176,16 @@ export default function UsersManagementPage() {
   
   const toggleLoginRestriction = async (userId: number, currentRestriction: boolean) => {
     try {
-      // In a real app, you would include an auth token
-      const response = await fetch('/api/admin/users', {
+      // Send request to the specialized login restriction endpoint
+      const response = await fetch('/api/admin/users/restricted', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': currentUser?.id.toString() || ''
+          'Authorization': currentUser?.id.toString()
         },
         body: JSON.stringify({
-          id: userId,
-          isLoginRestricted: !currentRestriction
+          userId,
+          isRestricted: !currentRestriction
         })
       });
       
@@ -192,7 +200,7 @@ export default function UsersManagementPage() {
         )
       );
       
-      setSuccessMessage(`User login restriction updated successfully`);
+      setSuccessMessage(`User login ${currentRestriction ? 'allowed' : 'restricted'} successfully`);
       setShowSuccessMessage(true);
       setTimeout(() => setShowSuccessMessage(false), 3000);
     } catch (error) {
@@ -211,7 +219,7 @@ export default function UsersManagementPage() {
       const response = await fetch(`/api/admin/users?id=${userId}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': currentUser?.id.toString() || ''
+          'Authorization': currentUser?.id.toString()
         }
       });
       
@@ -504,8 +512,10 @@ export default function UsersManagementPage() {
                           
                           {user.isActive && (
                             <>
-                              <button
+                              <Button
                                 onClick={() => toggleLoginRestriction(user.id, user.isLoginRestricted)}
+                                variant="ghost"
+                                size="sm"
                                 className={`${user.isLoginRestricted ? 'text-green-600 hover:text-green-900' : 'text-red-600 hover:text-red-900'}`}
                                 title={user.isLoginRestricted ? 'Allow Login' : 'Restrict Login'}
                                 disabled={user.role === 'super_admin' && currentUser.id === user.id}
@@ -514,7 +524,7 @@ export default function UsersManagementPage() {
                                   <Unlock className="h-4 w-4" /> : 
                                   <UserMinus className="h-4 w-4" />
                                 }
-                              </button>
+                              </Button>
                               
                               <button
                                 onClick={() => deleteUser(user.id)}

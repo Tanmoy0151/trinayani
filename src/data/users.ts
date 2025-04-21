@@ -18,61 +18,66 @@ export interface User {
   email: string;
   password: string; // In a real app, this would be hashed
   phone?: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'field_employee' | 'super_admin' | 'backoffice_admin' | 'applicant';
   createdAt: string;
   applications: Application[];
+  isActive: boolean;
+  isLoginRestricted: boolean;
+  permissions?: {
+    users?: {
+      create: boolean;
+      read: boolean;
+      update: boolean;
+      delete: boolean;
+      manage_roles: boolean;
+    };
+    jobs?: {
+      create: boolean;
+      read: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    applications?: {
+      create: boolean;
+      read: boolean;
+      update: boolean;
+      delete: boolean;
+    };
+    system?: {
+      manage_settings: boolean;
+      view_logs: boolean;
+      manage_backups: boolean;
+    };
+  };
 }
 
 // Mock users data
 export const users: User[] = [
   {
     id: 1,
-    firstName: 'John',
-    lastName: 'Doe',
-    name: 'John Doe',
-    email: 'john@example.com',
+    firstName: 'Applicant',
+    lastName: 'User',
+    name: 'Applicant User',
+    email: 'applicant@example.com',
     password: 'password123', // This would be hashed in a real app
-    phone: '+918123456789',
-    role: 'user',
+    role: 'applicant',
     createdAt: '2023-05-15T10:00:00Z',
-    applications: [
-      {
-        id: 'app-001',
-        userId: 1,
-        jobId: 101,
-        jobTitle: 'Medical Equipment Technician',
-        appliedAt: '2023-06-10T14:30:00Z',
-        status: 'interview',
-      },
-      {
-        id: 'app-002',
-        userId: 1,
-        jobId: 102,
-        jobTitle: 'Sales Executive - Medical Devices',
-        appliedAt: '2023-07-05T09:15:00Z',
-        status: 'pending',
-      }
-    ]
+    applications: [],
+    isActive: true,
+    isLoginRestricted: false
   },
   {
     id: 2,
-    firstName: 'Jane',
-    lastName: 'Smith',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
+    firstName: 'Field',
+    lastName: 'Employee',
+    name: 'Field Employee',
+    email: 'fieldemployee@example.com',
     password: 'password456', // This would be hashed in a real app
-    role: 'user',
+    role: 'field_employee',
     createdAt: '2023-06-20T11:30:00Z',
-    applications: [
-      {
-        id: 'app-003',
-        userId: 2,
-        jobId: 103,
-        jobTitle: 'Customer Support Specialist',
-        appliedAt: '2023-07-12T16:45:00Z',
-        status: 'reviewing',
-      }
-    ]
+    applications: [],
+    isActive: true,
+    isLoginRestricted: false
   },
   {
     id: 3,
@@ -81,64 +86,81 @@ export const users: User[] = [
     name: 'Admin User',
     email: 'admin@trinayanimedical.com',
     password: 'admin123', // This would be hashed in a real app
-    role: 'admin',
+    role: 'backoffice_admin',
     createdAt: '2023-01-01T00:00:00Z',
-    applications: []
+    applications: [],
+    isActive: true,
+    isLoginRestricted: false
+  },
+  {
+    id: 4,
+    firstName: 'Super',
+    lastName: 'Admin',
+    name: 'Super Admin',
+    email: 'superadmin@trinayanimedical.com',
+    password: 'super123', // This would be hashed in a real app
+    role: 'super_admin',
+    createdAt: '2022-12-01T00:00:00Z',
+    applications: [],
+    isActive: true,
+    isLoginRestricted: false,
+    permissions: {
+      users: {
+        create: true,
+        read: true,
+        update: true,
+        delete: true,
+        manage_roles: true
+      },
+      jobs: {
+        create: true,
+        read: true,
+        update: true,
+        delete: true
+      },
+      applications: {
+        create: true,
+        read: true,
+        update: true,
+        delete: true
+      },
+      system: {
+        manage_settings: true,
+        view_logs: true,
+        manage_backups: true
+      }
+    }
+  },
+  {
+    id: 5,
+    firstName: 'Regular',
+    lastName: 'User',
+    name: 'Regular User',
+    email: 'user@example.com',
+    password: 'password789', // This would be hashed in a real app
+    role: 'user',
+    createdAt: '2023-08-15T14:30:00Z',
+    applications: [],
+    isActive: true,
+    isLoginRestricted: false
+  },
+  {
+    id: 6,
+    firstName: 'Standard',
+    lastName: 'Admin',
+    name: 'Standard Admin',
+    email: 'standardadmin@trinayanimedical.com',
+    password: 'admin456', // This would be hashed in a real app
+    role: 'admin',
+    createdAt: '2023-03-10T09:30:00Z',
+    applications: [],
+    isActive: true,
+    isLoginRestricted: false
   }
 ];
 
-// Additional mock applications with corrected property names
-export const additionalApplications: Application[] = [
-  {
-    id: 'APP-0001',
-    userId: 1,
-    jobId: 1,
-    jobTitle: 'Medical Equipment Sales Representative',
-    status: 'interview',
-    appliedAt: '2023-03-10T09:15:00Z',
-    resume: '/uploads/john_doe_resume.pdf',
-    notes: 'Candidate has excellent communication skills. Scheduled for second interview.'
-  },
-  {
-    id: 'APP-0002',
-    userId: 2,
-    jobId: 2,
-    jobTitle: 'Service Engineer',
-    status: 'pending',
-    appliedAt: '2023-04-12T16:20:00Z',
-    resume: '/uploads/jane_smith_resume.pdf'
-  },
-  {
-    id: 'APP-0003',
-    userId: 4, // Imaginary user
-    jobId: 3,
-    jobTitle: 'Technical Support Specialist',
-    status: 'rejected',
-    appliedAt: '2023-03-22T13:10:00Z',
-    resume: '/uploads/mike_resume.pdf',
-    notes: 'Not enough experience with medical equipment.'
-  },
-  {
-    id: 'APP-0004',
-    userId: 5, // Imaginary user
-    jobId: 1,
-    jobTitle: 'Medical Equipment Sales Representative',
-    status: 'accepted',
-    appliedAt: '2023-02-28T10:30:00Z',
-    resume: '/uploads/susan_resume.pdf',
-    notes: 'Excellent candidate with relevant experience. Offer sent.'
-  },
-  {
-    id: 'APP-0005',
-    userId: 6, // Imaginary user
-    jobId: 4,
-    jobTitle: 'Marketing Specialist',
-    status: 'reviewing',
-    appliedAt: '2023-04-18T14:45:00Z',
-    resume: '/uploads/tom_resume.pdf',
-    notes: 'Good portfolio. Need to check references.'
-  }
-];
+// Empty the additional mock applications
+export const additionalApplications: Application[] = [];
 
 // Function to find user by email
 export function findUserByEmail(email: string): User | undefined {
@@ -178,6 +200,8 @@ export function updateUserProfile(userId: number, data: Partial<User>): User | n
     password: users[userIndex].password,
     role: users[userIndex].role,
     applications: users[userIndex].applications,
+    isActive: users[userIndex].isActive,
+    isLoginRestricted: users[userIndex].isLoginRestricted
   };
   
   return users[userIndex];

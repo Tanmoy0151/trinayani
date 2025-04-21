@@ -11,7 +11,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'field_employee' | 'super_admin' | 'backoffice_admin' | 'applicant';
 }
 
 // JWT payload interface
@@ -21,6 +21,72 @@ export interface JWTPayload {
   role: string;
   iat?: number;
   exp?: number;
+}
+
+// Define user permissions by role
+export const ROLE_PERMISSIONS = {
+  super_admin: [
+    'dashboard.admin.view',
+    'users.manage',
+    'jobs.manage',
+    'blog.manage',
+    'applications.manage',
+    'expenses.manage',
+    'settings.manage',
+    'reports.view',
+    'client.manage'
+  ],
+  backoffice_admin: [
+    'dashboard.admin.view',
+    'jobs.manage',
+    'blog.manage',
+    'applications.manage',
+    'expenses.manage',
+    'settings.view',
+    'reports.view'
+  ],
+  field_employee: [
+    'dashboard.employee.view',
+    'tasks.view',
+    'tasks.update',
+    'expenses.create',
+    'expenses.view_own',
+    'client.view'
+  ],
+  applicant: [
+    'dashboard.applicant.view',
+    'applications.view_own',
+    'applications.create',
+    'profile.manage'
+  ],
+  user: [
+    'dashboard.basic.view',
+    'profile.manage'
+  ],
+  admin: [
+    'dashboard.admin.view',
+    'jobs.manage',
+    'blog.manage',
+    'applications.manage',
+    'settings.view'
+  ]
+};
+
+// Function to get dashboard route by role
+export function getDashboardByRole(role: string): string {
+  switch (role) {
+    case 'super_admin':
+    case 'backoffice_admin':
+    case 'admin':
+      return '/admin/dashboard';
+    case 'field_employee':
+      return '/employee/dashboard';
+    case 'applicant':
+      return '/applicant/dashboard';
+    default:
+      console.warn(`getDashboardByRole: Unknown role "${role}", defaulting to homepage`);
+      return '/';
+  }
 }
 
 /**
@@ -87,14 +153,42 @@ export function authMiddleware(req: NextRequest) {
 /**
  * Check if user has required role
  */
-export function hasRole(user: User | null, requiredRole: 'user' | 'admin'): boolean {
+export function hasRole(user: User | null, requiredRole: 'user' | 'admin' | 'field_employee' | 'super_admin' | 'backoffice_admin' | 'applicant'): boolean {
   if (!user) return false;
   
-  if (requiredRole === 'admin') {
-    return user.role === 'admin';
+  if (requiredRole === 'super_admin') {
+    return user.role === 'super_admin';
   }
   
-  return true; // All authenticated users have 'user' role
+  if (requiredRole === 'backoffice_admin') {
+    return user.role === 'super_admin' || user.role === 'backoffice_admin';
+  }
+  
+  if (requiredRole === 'admin') {
+    return user.role === 'super_admin' || user.role === 'backoffice_admin' || user.role === 'admin';
+  }
+  
+  if (requiredRole === 'field_employee') {
+    return user.role === 'super_admin' || user.role === 'backoffice_admin' || user.role === 'field_employee';
+  }
+  
+  return true; // All authenticated users have access to user/applicant level
+}
+
+/**
+ * Check if user has specific permission
+ */
+export function hasPermission(user: User | null, permission: string): boolean {
+  if (!user) return false;
+  
+  // Super admin has all permissions
+  if (user.role === 'super_admin') return true;
+  
+  // Get permissions for the user's role
+  const rolePermissions = ROLE_PERMISSIONS[user.role as keyof typeof ROLE_PERMISSIONS] || [];
+  
+  // Check if the user's role includes the required permission
+  return rolePermissions.includes(permission);
 }
 
 /**

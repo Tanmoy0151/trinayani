@@ -140,3 +140,47 @@ EMAIL_PASS=your_email_password
 - Configure environment variables for production
 - Build the project with `npm run build`
 - Deploy using your preferred hosting service 
+
+
+
+### User dashboard
+
+```I've redesigned the dashboard system to solve permission accessibility issues. Here's what I've implemented:
+Comprehensive Permission System:
+Added a full role-based permission system in lib/auth.ts with granular permissions for each user type
+Created a centralized ROLE_PERMISSIONS map that defines exactly what each role can access
+Added a hasPermission function to check permissions anywhere in the app
+Implemented a getDashboardByRole function to route users to the correct dashboard
+Unified Dashboard Redirect:
+Created a DashboardRedirect component that automatically sends users to the right dashboard based on their role
+Updated the main /dashboard route to use this component, ensuring users always land in the appropriate place
+Role-Specific Dashboard for Field Employees:
+Built a comprehensive field employee dashboard that checks permissions before showing content
+Added error handling for unauthorized access with clear messaging
+Implemented conditional UI elements that only appear if the user has appropriate permissions
+Added task management features with visual status indicators
+Layout and SEO Improvements:
+Created proper metadata for SEO optimization
+Implemented a clean, minimalist layout structure for better performance
+This redesign ensures:
+Each user type sees only the features they have permission to access
+The application automatically routes users to the correct dashboard
+Permissions are checked throughout the app for consistent security
+A unified, intuitive experience tailored to each user's role```
+
+-----------------------------------------------------------------------------------
+Super Admin
+Email: superadmin@trinayanimedical.com
+Password: super123
+
+Backoffice Admin
+Email: admin@trinayanimedical.com
+Password: admin123
+
+Field Employee
+Email: fieldemployee@example.com
+Password: password456
+
+Applicant
+Email: applicant@example.com
+Password: password123

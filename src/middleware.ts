@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
       }
       
       // For admin routes, check if user has admin role
-      if (isAdminRoute && payload.role !== 'admin') {
+      if (isAdminRoute && !['super_admin', 'backoffice_admin', 'admin'].includes(payload.role)) {
         // Redirect non-admin users to unauthorized page
         return NextResponse.redirect(new URL('/unauthorized', request.url));
       }

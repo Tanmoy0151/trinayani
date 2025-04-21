@@ -3,7 +3,7 @@ export interface JobOpening {
   title: string;
   department: string;
   location: string;
-  type: 'Full-time' | 'Part-time' | 'Contract';
+  type: 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
   experience: string;
   description: string;
   requirements: string[];

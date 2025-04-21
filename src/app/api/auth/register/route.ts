@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     // Create new user (in a real app, this would be a database insert)
     const newUser = {
-      id: Date.now().toString(),
+      id: parseInt(Date.now().toString()),
       firstName,
       lastName,
       name: `${firstName} ${lastName}`,
@@ -43,7 +43,9 @@ export async function POST(request: NextRequest) {
       password, // In a real app, store hashedPassword instead
       role: 'user' as const, // Explicitly typed as 'user'
       createdAt: new Date().toISOString(),
-      applications: []
+      applications: [],
+      isActive: true,
+      isLoginRestricted: false
     };
 
     // Add to our users array
