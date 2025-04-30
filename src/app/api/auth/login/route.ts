@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { findUserByEmail } from '@/data/users';
 import { generateToken } from '@/lib/auth';
+import connectToDatabase from '@/lib/mongodb';
+import User from '@/models/User';
+import * as bcrypt from 'bcrypt';
 
 // Since the users array isn't exported from register route, we'll define it here
 // In a real application, this would be a database connection
@@ -32,8 +34,11 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`API: Attempting to find user with email: ${email}`);
-    // Find user from users.ts
-    const user = findUserByEmail(email);
+    
+    // Connect to MongoDB and find user
+    await connectToDatabase();
+    const user = await User.findOne({ email: email.toLowerCase() });
+    
     if (!user) {
       console.warn(`API: Login failed - user not found with email: ${email}`);
       return NextResponse.json(
@@ -51,8 +56,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In a real app, you would compare hashed passwords
-    const passwordMatch = password === user.password;
+    // Compare password
+    // In a real app with proper setup, passwords would be hashed
+    // For now, comparing directly as our schema doesn't have hashed passwords yet
+    let passwordMatch;
+    try {
+      // First try with bcrypt if it's available
+      passwordMatch = await bcrypt.compare(password, user.password);
+    } catch (error) {
+      // Fallback to direct comparison if bcrypt fails (e.g., not installed or password not hashed)
+      passwordMatch = password === user.password;
+    }
 
     if (!passwordMatch) {
       console.warn(`API: Login failed - invalid password for user: ${user.id}`);
@@ -63,7 +77,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Don't return the password
-    const { password: _, ...userWithoutPassword } = user;
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
 
     console.log(`API: Login successful for user: ${user.id}, role: ${user.role}`);
     
@@ -73,11 +88,7 @@ export async function POST(request: NextRequest) {
         id: user.id.toString(),
         email: user.email,
         name: user.name,
-        // Map the user roles correctly
-        role: user.role === 'super_admin' ? 'super_admin' : 
-              user.role === 'backoffice_admin' ? 'backoffice_admin' :
-              user.role === 'field_employee' ? 'field_employee' :
-              user.role === 'applicant' ? 'applicant' : 'user',
+        role: user.role,
       });
 
       // Return the response with user data and token

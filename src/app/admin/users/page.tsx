@@ -32,7 +32,11 @@ interface User {
   isLoginRestricted: boolean;
 }
 
-export default function UsersManagementPage() {
+type Params = {
+  id: string;
+};
+
+export default function Page({ params }: { params: Params }) {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);

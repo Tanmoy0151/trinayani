@@ -7,7 +7,7 @@ import Footer from '@/components/Footer';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Trinayani Medical - Healthcare Equipment Solutions',
+  title: 'TRINAYANI ENTERPRISES - Healthcare Equipment Solutions',
   description: 'Business partner of GE Healthcare and Carl Zeiss providing sales and service for medical equipment like CT, MRI, Cathlab, Ultrasound, and eye examination equipment.',
 };
 

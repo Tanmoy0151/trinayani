@@ -108,9 +108,9 @@ export default function Contact() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Address</h3>
                     <p className="text-gray-600 mt-1">
-                      123 Business Avenue<br />
-                      Business District<br />
-                      Mumbai - 400001
+                      37 – A Goutam Buddha Path<br />
+                      Uliyan Kadma Jamshedpur<br />
+                      Jharkhand 831005
                     </p>
                   </div>
                 </div>
@@ -124,8 +124,8 @@ export default function Contact() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Phone</h3>
                     <p className="text-gray-600 mt-1">
-                      +91 9876543210<br />
-                      +91 9876543211
+                      +91-7903486761<br />
+                      +91-9903975899
                     </p>
                   </div>
                 </div>
@@ -139,8 +139,7 @@ export default function Contact() {
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Email</h3>
                     <p className="text-gray-600 mt-1">
-                      info@trinayanimedical.com<br />
-                      sales@trinayanimedical.com
+                      trinayanienterprises.service@gmail.com
                     </p>
                   </div>
                 </div>
@@ -157,6 +156,20 @@ export default function Contact() {
                       Monday - Friday: 9:00 AM - 6:00 PM<br />
                       Saturday: 10:00 AM - 4:00 PM<br />
                       Sunday: Closed
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="bg-primary-100 p-3 rounded-full mr-4">
+                    <svg className="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900">GSTIN</h3>
+                    <p className="text-gray-600 mt-1">
+                      20AAOFT0101B1Z5
                     </p>
                   </div>
                 </div>

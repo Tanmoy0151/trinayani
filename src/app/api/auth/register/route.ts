@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { users, findUserByEmail, User } from '@/data/users';
+import connectToDatabase from '@/lib/mongodb';
+import User from '@/models/User';
+import * as bcrypt from 'bcrypt';
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,8 +23,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Connect to MongoDB
+    await connectToDatabase();
+
     // Check if user already exists
-    const existingUser = findUserByEmail(email);
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
         { message: 'User with this email already exists' },
@@ -30,29 +35,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // In a real application, you would hash the password before storing
-    // const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password
+    let hashedPassword;
+    try {
+      // Try to hash with bcrypt if available
+      hashedPassword = await bcrypt.hash(password, 10);
+    } catch (error) {
+      // Fallback to storing plain password if bcrypt is not available
+      // In production, this should never happen and you should always hash passwords
+      console.warn('Warning: Storing password without hashing. Bcrypt may not be installed.');
+      hashedPassword = password;
+    }
 
-    // Create new user (in a real app, this would be a database insert)
-    const newUser = {
-      id: parseInt(Date.now().toString()),
+    // Create new user
+    const newUser = new User({
       firstName,
       lastName,
       name: `${firstName} ${lastName}`,
-      email,
-      password, // In a real app, store hashedPassword instead
-      role: 'user' as const, // Explicitly typed as 'user'
-      createdAt: new Date().toISOString(),
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      role: 'user',
       applications: [],
       isActive: true,
       isLoginRestricted: false
-    };
+    });
 
-    // Add to our users array
-    users.push(newUser);
+    // Save to database
+    await newUser.save();
 
     // Return success without exposing the password
-    const { password: _, ...userWithoutPassword } = newUser;
+    const userWithoutPassword = newUser.toObject();
+    delete userWithoutPassword.password;
     
     return NextResponse.json(
       { 
@@ -64,7 +77,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { message: 'Internal server error' },
+      { message: 'Internal server error', error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

@@ -239,7 +239,7 @@ const Header = () => {
       <div className="container-custom py-4">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold text-primary-600 transition-colors duration-300">Trinayani Medical</div>
+            <div className="text-2xl font-bold text-primary-600 transition-colors duration-300">TRINAYANI ENTERPRISES</div>
           </Link>
 
           {/* Desktop Navigation */}
