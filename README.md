@@ -1,3 +1,6 @@
+
+# trinayani
+=======
 # Trinayani Medical - Portfolio Website
 
 A portfolio website for Trinayani Medical, a business partner of GE Healthcare and Carl Zeiss, providing sales and service for medical equipment.
@@ -184,3 +187,4 @@ Password: password456
 Applicant
 Email: applicant@example.com
 Password: password123
+
